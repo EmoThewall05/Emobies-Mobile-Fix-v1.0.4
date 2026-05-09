@@ -9,7 +9,7 @@ import 'dart:convert';
 
 const String _apiBase = String.fromEnvironment(
   'API_BASE',
-  defaultValue: 'https://your-app.ondigitalocean.app',
+  defaultValue: 'https://emobies-api.meradivin.workers.dev',
 );
 
 void main() {
