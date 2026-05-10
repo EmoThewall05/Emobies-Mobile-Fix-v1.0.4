@@ -4,7 +4,7 @@ publish_to: 'none'
 version: 1.0.9+109
 
 environment:
-  sdk: '>=3.3.0 <4.0.0'
+  sdk: '^3.6.0'
 
 dependencies:
   flutter:
@@ -12,6 +12,7 @@ dependencies:
   http: ^1.2.1
   web_socket_channel: ^2.4.0
   flutter_secure_storage: ^9.2.2
+  crypto: ^3.0.3
   go_router: ^13.2.0
   provider: ^6.1.2
   local_auth: ^2.3.0
