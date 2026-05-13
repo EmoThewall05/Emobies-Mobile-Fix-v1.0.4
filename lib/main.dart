@@ -1,16 +1,15 @@
+import 'login_screen.dart';
+import 'login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:local_auth/local_auth.dart';
+// import 'package:local_auth/local_auth.dart'; // removed
 import 'package:http/http.dart' as http;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dart:convert';
 
-const String _apiBase = String.fromEnvironment(
-  'API_BASE',
-  defaultValue: 'https://emobies-api.meradivin.workers.dev',
-);
+const String _apiBase = 'https://emobies-mobile-fix-v1-0-4.vercel.app';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -97,6 +96,25 @@ class AuthState extends ChangeNotifier {
   }
 
   Future<void> logout() async { _token = null; _role = 'customer'; await _storage.deleteAll(); notifyListeners(); }
+
+  Future<Map<String, dynamic>> loginWithBiometric() async {
+    if (_token == null) return {'success': false, 'error': 'No saved session'};
+    try {
+      final res = await http.get(
+        Uri.parse('\$_apiBase/api/auth/login'),
+        headers: authHeaders,
+      ).timeout(const Duration(seconds: 8));
+      if (res.statusCode == 200) { notifyListeners(); return {'success': true}; }
+      await logout();
+      return {'success': false, 'error': 'Session expired. Enter password.'};
+    } catch (_) {
+      return {'success': true};
+    }
+  }
+
+
+  
+
 }
 
 class EmobiesApp extends StatefulWidget {
@@ -133,7 +151,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _pass = TextEditingController();
-  final _localAuth = LocalAuthentication();
+  // final _localAuth = LocalAuthentication(); // removed
   String? _error;
   bool _loading = false;
   int _fails = 0;
@@ -159,7 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _biometric() async {
     try {
-      final ok = await _localAuth.authenticate(localizedReason: 'Unlock Emobies', options: const AuthenticationOptions(biometricOnly: true));
+      final ok = false; // biometric disabled
       if (ok) setState(() {});
     } catch (_) { setState(() => _error = 'Biometric failed. Use password.'); }
   }
