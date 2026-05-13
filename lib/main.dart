@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dart:convert';
 
-const String _apiBase = 'https://emobies-mobile-fix-v1-0-4.vercel.app';
+const String _apiBase = 'https://emothewall-api-key.vercel.app';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
