@@ -12,9 +12,9 @@
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
             <meta-data
-              android:name="io.flutter.embedding.android.NormalTheme"
-              android:resource="@style/NormalTheme"
-              />
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme"
+                />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -23,14 +23,8 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <meta-data
+            android:name="io.flutter.embedding.android.EnableImpeller"
+            android:value="false" />
     </application>
 </manifest>
-
-- name: Verify MainActivity
-        run: |
-          echo "=== Finding all MainActivity files ==="
-          find android -name "MainActivity.kt" -type f
-          echo "=== Manifest content ==="
-          cat android/app/src/main/AndroidManifest.xml
-          echo "=== build.gradle content ==="
-          cat android/app/build.gradle | head -20
