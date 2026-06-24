@@ -68,7 +68,7 @@ Gemini AI (Google)
 
 ```
 Phone: 9847842172
-Password: Emobies@2026!
+Password: xxxxxxxx
 ```
 
 ---
