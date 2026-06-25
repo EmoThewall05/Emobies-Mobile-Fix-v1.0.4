@@ -1,3 +1,5 @@
+package com.example.ui
+
 import android.content.Context
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
