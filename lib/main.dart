@@ -1,5 +1,6 @@
-import 'login_screen.dart';
-import 'login_screen.dart';
+import 'package:local_auth/local_auth.dart';
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -151,7 +152,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _pass = TextEditingController();
-  // final _localAuth = LocalAuthentication(); // removed
+  final _localAuth = LocalAuthentication();
   String? _error;
   bool _loading = false;
   int _fails = 0;
@@ -177,9 +178,28 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _biometric() async {
     try {
-      final ok = false; // biometric disabled
-      if (ok) setState(() {});
-    } catch (_) { setState(() => _error = 'Biometric failed. Use password.'); }
+      final canCheck = await _localAuth.canCheckBiometrics;
+      final isAvailable = await _localAuth.isDeviceSupported();
+      if (!canCheck || !isAvailable) {
+        setState(() => _error = '⚠️ Biometric not available on this device.');
+        return;
+      }
+      final ok = await _localAuth.authenticate(
+        localizedReason: 'Unlock Emobies with fingerprint',
+        options: const AuthenticationOptions(
+          biometricOnly: true,
+          stickyAuth: true,
+        ),
+      );
+      if (ok) {
+        final result = await widget.auth.loginWithBiometric();
+        if (!result['success']) {
+          setState(() => _error = result['error'] ?? 'Biometric login failed.');
+        }
+      }
+    } catch (e) {
+      setState(() => _error = 'Biometric failed. Use password.');
+    }
   }
 
   @override
