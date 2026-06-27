@@ -243,7 +243,62 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: const Text('☝  Fingerprint Login'),
                 ),
               ),
+              const SizedBox(height: 8),
+              SizedBox(width: double.infinity, height: 48,
+                child: TextButton(
+                  onPressed: () => _showSignUp(context),
+                  child: Text('New here? Create Account', style: GoogleFonts.jetBrainsMono(fontSize: 11, color: EmobiesTheme.muted)),
+                ),
+              ),
               if (_error != null) ...[const SizedBox(height: 10), Text(_error!, style: GoogleFonts.jetBrainsMono(fontSize: 11, color: EmobiesTheme.red), textAlign: TextAlign.center)],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+
+  void _showSignUp(BuildContext context) {
+    final nameCtrl = TextEditingController();
+    final passCtrl = TextEditingController();
+    final confirmCtrl = TextEditingController();
+    String? error;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF111318),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setState) => Padding(
+          padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom, left: 24, right: 24, top: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Create Account', style: GoogleFonts.syne(fontSize: 20, fontWeight: FontWeight.w800, color: EmobiesTheme.text)),
+              const SizedBox(height: 20),
+              TextField(controller: nameCtrl, style: const TextStyle(color: EmobiesTheme.text), decoration: const InputDecoration(hintText: 'Username'), ),
+              const SizedBox(height: 10),
+              TextField(controller: passCtrl, obscureText: true, style: const TextStyle(color: EmobiesTheme.text), decoration: const InputDecoration(hintText: 'Password'), ),
+              const SizedBox(height: 10),
+              TextField(controller: confirmCtrl, obscureText: true, style: const TextStyle(color: EmobiesTheme.text), decoration: const InputDecoration(hintText: 'Confirm Password'), ),
+              if (error != null) ...[const SizedBox(height: 8), Text(error!, style: const TextStyle(color: EmobiesTheme.red, fontSize: 12))],
+              const SizedBox(height: 16),
+              SizedBox(width: double.infinity, height: 52,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: EmobiesTheme.orange, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(13))),
+                  onPressed: () async {
+                    if (passCtrl.text != confirmCtrl.text) { setState(() => error = 'Passwords do not match'); return; }
+                    if (nameCtrl.text.isEmpty || passCtrl.text.isEmpty) { setState(() => error = 'All fields required'); return; }
+                    final res = await widget.auth.signUp(nameCtrl.text, passCtrl.text);
+                    if (res['success']) { Navigator.pop(ctx); }
+                    else { setState(() => error = res['error'] ?? 'Sign up failed'); }
+                  },
+                  child: const Text('Create Account'),
+                ),
+              ),
+              const SizedBox(height: 24),
             ],
           ),
         ),
