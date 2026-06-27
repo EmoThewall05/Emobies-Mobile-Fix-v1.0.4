@@ -1,7 +1,7 @@
 name: emobies_app
 description: Emobies — Mobile Repair · TheWall · Emowall AI
 publish_to: 'none'
-version: 1.0.9+110
+version: 1.0.9+111
 
 environment:
   sdk: '^3.6.0'
