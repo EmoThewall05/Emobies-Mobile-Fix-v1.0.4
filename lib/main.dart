@@ -98,6 +98,23 @@ class AuthState extends ChangeNotifier {
 
   Future<void> logout() async { _token = null; _role = 'customer'; await _storage.deleteAll(); notifyListeners(); }
 
+  Future<Map<String, dynamic>> signUp(String username, String password) async {
+    try {
+      final res = await http.post(
+        Uri.parse('$_apiBase/api/signup'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'username': username, 'password': password}),
+      ).timeout(const Duration(seconds: 10));
+      final data = jsonDecode(res.body);
+      if (res.statusCode == 200 && data['success'] == true) {
+        return {'success': true};
+      }
+      return {'success': false, 'error': data['error'] ?? 'Sign up failed'};
+    } catch (e) {
+      return {'success': false, 'error': 'Cannot reach server.'};
+    }
+  }
+
   Future<Map<String, dynamic>> loginWithBiometric() async {
     if (_token == null) return {'success': false, 'error': 'No saved session'};
     try {
