@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dart:convert';
 
-const String _apiBase = String.fromEnvironment('API_BASE', defaultValue: 'https://emobies-ai.meradivin.workers.dev');
+const String _apiBase = String.fromEnvironment('API_BASE', defaultValue: 'https://emobies-mobile-fix-v1-0-4.onrender.com');
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
