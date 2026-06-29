@@ -190,31 +190,6 @@ class _LoginScreenState extends State<LoginScreen> {
     finally { setState(() => _loading = false); }
   }
 
-  Future<void> _biometric() async {
-    try {
-      final canCheck = await _localAuth.canCheckBiometrics;
-      final isAvailable = await _localAuth.isDeviceSupported();
-      if (!canCheck || !isAvailable) {
-        setState(() => _error = '⚠️ Biometric not available on this device.');
-        return;
-      }
-      final ok = await _localAuth.authenticate(
-        localizedReason: 'Unlock Emobies with fingerprint',
-        options: const AuthenticationOptions(
-          biometricOnly: true,
-          stickyAuth: true,
-        ),
-      );
-      if (ok) {
-        final result = await widget.auth.loginWithBiometric();
-        if (!result['success']) {
-          setState(() => _error = result['error
-        }
-      }
-    } catch (e) {
-      setState(() => _error = 'Biometric failed. Use password.');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -250,13 +225,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              SizedBox(width: double.infinity, height: 48,
-                child: OutlinedButton(
-                  onPressed: _biometric,
-                  style: OutlinedButton.styleFrom(foregroundColor: EmobiesTheme.text2, side: const BorderSide(color: EmobiesTheme.border), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(13))),
-                  child: const Text('☝  Fingerprint Login'),
-                ),
-              ),
               const SizedBox(height: 8),
               SizedBox(width: double.infinity, height: 48,
                 child: TextButton(
