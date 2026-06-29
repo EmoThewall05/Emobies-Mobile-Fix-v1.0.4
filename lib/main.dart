@@ -208,7 +208,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (ok) {
         final result = await widget.auth.loginWithBiometric();
         if (!result['success']) {
-          setState(() => _error = result['error'] ?? 'Biometric login failed.');
+          setState(() => _error = result['error
         }
       }
     } catch (e) {
