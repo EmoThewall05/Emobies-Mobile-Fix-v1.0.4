@@ -166,7 +166,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _pass = TextEditingController();
-  final _localAuth = LocalAuthentication();
+  
   String? _error;
   bool _loading = false;
   int _fails = 0;
