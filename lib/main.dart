@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dart:convert';
 
-const String _apiBase = 'https://emobies-ai.meradivin.workers.dev';
+const String _apiBase = String.fromEnvironment('API_BASE', defaultValue: 'https://emobies-ai.meradivin.workers.dev');
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -98,9 +98,9 @@ class AuthState extends ChangeNotifier {
   Future<Map<String, dynamic>> signUp(String username, String password) async {
     try {
       final res = await http.post(
-        Uri.parse('$_apiBase/api/signup'),
+        Uri.parse('$_apiBase/api/register'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'username': username, 'password': password}),
+        body: jsonEncode({'name': username, 'phone': username, 'password': password}),
       ).timeout(const Duration(seconds: 10));
       final data = jsonDecode(res.body);
       if (res.statusCode == 200 && data['success'] == true) {
