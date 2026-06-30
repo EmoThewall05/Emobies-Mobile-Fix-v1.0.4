@@ -180,7 +180,7 @@ class SupabaseService {
         .eq('room_id', roomId)
         .order('created_at', ascending: false)
         .limit(limit);
-    return (res).map((e) => ChatRoom.fromJson(e)).toList();
+    return (res).map((e) => ChatMessage.fromJson(e)).toList();
   }
 
   Future<void> sendMessage(Map<String, dynamic> data) async {
