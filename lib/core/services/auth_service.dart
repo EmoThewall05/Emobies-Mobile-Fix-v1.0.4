@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
@@ -29,7 +28,6 @@ class AuthService {
   UserModel? get currentUser => _currentUser;
   String? get token => _currentUser?.emoKey;
 
-  // ========== PASSWORD HASHING ==========
   String _hashPassword(String password, String salt) {
     final bytes = utf8.encode(password + salt);
     final digest = sha256.convert(bytes);
@@ -51,7 +49,6 @@ class AuthService {
     return true;
   }
 
-  // ========== RATE LIMITING ==========
   Future<bool> _checkRateLimit() async {
     final prefs = await SharedPreferences.getInstance();
     final lastAttempt = prefs.getInt(_lastAttemptKey) ?? 0;
@@ -59,13 +56,12 @@ class AuthService {
     final now = DateTime.now().millisecondsSinceEpoch;
 
     if (now - lastAttempt > 60000) {
-      // Reset after 1 minute
       await prefs.setInt(_attemptCountKey, 0);
       return true;
     }
 
     if (attemptCount >= 5) {
-      return false; // Blocked
+      return false;
     }
 
     await prefs.setInt(_attemptCountKey, attemptCount + 1);
@@ -73,7 +69,6 @@ class AuthService {
     return true;
   }
 
-  // ========== INIT ==========
   Future<bool> init() async {
     try {
       final storedToken = await _storage.read(key: _tokenKey);
@@ -110,7 +105,7 @@ class AuthService {
       ).timeout(const Duration(seconds: 8));
       return res.statusCode == 200;
     } catch (_) {
-      return true; // Offline mode
+      return true;
     }
   }
 
@@ -134,14 +129,12 @@ class AuthService {
     }
   }
 
-  // ========== LOGIN ==========
   Future<Map<String, dynamic>> login(String phone, String password) async {
     if (!await _checkRateLimit()) {
       return {'success': false, 'error': 'Too many attempts. Try again in 1 minute.'};
     }
 
     try {
-      // Hash password client-side before sending
       final salt = _generateSalt();
       final hashedPassword = _hashPassword(password, salt);
 
@@ -171,10 +164,6 @@ class AuthService {
 
         _currentUser = UserModel.fromJson(userData);
 
-        if (role != 'customer') {
-          await _logStaffLogin(phone, role);
-        }
-
         return {'success': true, 'role': role};
       }
       return {'success': false, 'error': data['error'] ?? 'Invalid credentials'};
@@ -184,7 +173,6 @@ class AuthService {
     }
   }
 
-  // ========== SIGN UP ==========
   Future<Map<String, dynamic>> signUp({
     required String name,
     required String phone,
@@ -220,18 +208,44 @@ class AuthService {
 
       final data = jsonDecode(res.body);
 
-      if (res.statusCode == 200 && data['success'] == true) {
-        return {'success': true};
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        return {'success': true, 'message': data['message'] ?? 'Registration successful'};
       }
       return {'success': false, 'error': data['error'] ?? 'Registration failed'};
     } catch (e) {
       log('SignUp error: $e');
-      return {'success': false, 'error': 'Cannot reach server.'};
+      return {'success': false, 'error': 'Cannot reach server. Check connection.'};
     }
   }
 
-  // ========== BIOMETRIC ==========
-  Future<bool> isBiometricAvailable() async {
+  Future<void> logout() async {
+    await _storage.delete(key: _tokenKey);
+    await _storage.delete(key: _refreshKey);
+    await _storage.delete(key: _roleKey);
+    await _storage.delete(key: _userKey);
+    await _storage.delete(key: _biometricKey);
+    _currentUser = null;
+  }
+
+  Future<bool> isLoggedIn() async {
+    final token = await _storage.read(key: _tokenKey);
+    return token != null && token.isNotEmpty;
+  }
+
+  Future<String?> getRole() async {
+    return await _storage.read(key: _roleKey);
+  }
+
+  Future<bool> isBiometricEnabled() async {
+    final value = await _storage.read(key: _biometricKey);
+    return value == 'true';
+  }
+
+  Future<void> setBiometricEnabled(bool enabled) async {
+    await _storage.write(key: _biometricKey, value: enabled.toString());
+  }
+
+  Future<bool> canCheckBiometrics() async {
     try {
       final canCheck = await _localAuth.canCheckBiometrics;
       final isAvailable = await _localAuth.isDeviceSupported();
@@ -241,206 +255,18 @@ class AuthService {
     }
   }
 
-  Future<bool> authenticateWithBiometric({String reason = 'Authenticate to access Emobies'}) async {
+  Future<bool> authenticateWithBiometrics() async {
     try {
-      final isEnabled = await _storage.read(key: _biometricKey);
-      if (isEnabled != 'true') return false;
-
-      final didAuth = await _localAuth.authenticate(
-        localizedReason: reason,
-        authMessages: const [
-          AndroidAuthMessages(
-            signInTitle: 'Emobies Authentication',
-            cancelButton: 'Cancel',
-            biometricHint: 'Verify your identity',
-            biometricNotRecognized: 'Not recognized, try again',
-            biometricSuccess: 'Success!',
-            deviceCredentialsRequiredTitle: 'Device credential required',
-            deviceCredentialsSetupDescription: 'Please set up device credentials',
-            goToSettingsButton: 'Go to Settings',
-            goToSettingsDescription: 'Please set up biometric in Settings',
-          ),
-        ],
+      return await _localAuth.authenticate(
+        localizedReason: 'Authenticate to access Emobies',
         options: const AuthenticationOptions(
           biometricOnly: false,
           stickyAuth: true,
-          sensitiveTransaction: true,
         ),
       );
-      return didAuth;
     } catch (e) {
-      log('Biometric error: $e');
+      log('Biometric auth error: $e');
       return false;
     }
   }
-
-  Future<void> setBiometricEnabled(bool enabled) async {
-    await _storage.write(key: _biometricKey, value: enabled ? 'true' : 'false');
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('biometric_enabled', enabled);
-  }
-
-  Future<bool> isBiometricEnabled() async {
-    final val = await _storage.read(key: _biometricKey);
-    return val == 'true';
-  }
-
-  // ========== STAFF LOGIN ==========
-  Future<Map<String, dynamic>> staffLogin({
-    required String email,
-    required String password,
-    required String emoKey,
-  }) async {
-    if (!await _checkRateLimit()) {
-      return {'success': false, 'error': 'Too many attempts. Try again in 1 minute.'};
-    }
-
-    try {
-      final salt = _generateSalt();
-      final hashedPassword = _hashPassword(password, salt);
-
-      final res = await http.post(
-        Uri.parse('${AppConstants.apiBase}/api/staff/login'),
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Emo-Key': emoKey,
-          'X-Password-Salt': salt,
-        },
-        body: jsonEncode({
-          'email': email,
-          'password_hash': hashedPassword,
-          'salt': salt,
-        }),
-      ).timeout(const Duration(seconds: 10));
-
-      final data = jsonDecode(res.body) as Map<String, dynamic>;
-
-      if (res.statusCode == 200 && data['token'] != null) {
-        final role = data['role'] as String? ?? '';
-        final userData = data['user'] as Map<String, dynamic>? ?? {};
-
-        await _storage.write(key: _tokenKey, value: data['token']);
-        await _storage.write(key: _refreshKey, value: data['refresh_token'] ?? '');
-        await _storage.write(key: _roleKey, value: role);
-        await _storage.write(key: _userKey, value: jsonEncode(userData));
-
-        _currentUser = UserModel.fromJson(userData);
-        await _logStaffLogin(email, role);
-
-        return {'success': true, 'role': role};
-      }
-      return {'success': false, 'error': data['error'] ?? 'Invalid credentials'};
-    } catch (e) {
-      log('Staff login error: $e');
-      return {'success': false, 'error': 'Server unreachable'};
-    }
-  }
-
-  // ========== SUPER ADMIN ==========
-  Future<Map<String, dynamic>> superAdminLogin({
-    required String password,
-    required String secretKey,
-  }) async {
-    if (!await _checkRateLimit()) {
-      return {'success': false, 'error': 'Too many attempts. Try again in 1 minute.'};
-    }
-
-    try {
-      final salt = _generateSalt();
-      final hashedPassword = _hashPassword(password, salt);
-
-      final res = await http.post(
-        Uri.parse('${AppConstants.apiBase}/api/admin/login'),
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Password-Salt': salt,
-        },
-        body: jsonEncode({
-          'password_hash': hashedPassword,
-          'salt': salt,
-          'secret_key': secretKey,
-        }),
-      ).timeout(const Duration(seconds: 10));
-
-      final data = jsonDecode(res.body) as Map<String, dynamic>;
-
-      if (res.statusCode == 200 && data['token'] != null) {
-        await _storage.write(key: _tokenKey, value: data['token']);
-        await _storage.write(key: _refreshKey, value: data['refresh_token'] ?? '');
-        await _storage.write(key: _roleKey, value: 'super_admin');
-        await _storage.write(key: _userKey, value: jsonEncode(data['user'] ?? {}));
-        _currentUser = UserModel.fromJson(data['user'] ?? {});
-        return {'success': true, 'role': 'super_admin'};
-      }
-      return {'success': false, 'error': data['error'] ?? 'Access denied'};
-    } catch (e) {
-      log('Admin login error: $e');
-      return {'success': false, 'error': 'Server unreachable'};
-    }
-  }
-
-  // ========== UTILS ==========
-  Future<String?> getRole() async {
-    return _storage.read(key: _roleKey);
-  }
-
-  Future<Map<String, String>> getAuthHeaders() async {
-    final token = await _storage.read(key: _tokenKey);
-    return {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    };
-  }
-
-  Future<void> logout() async {
-    try {
-      final token = await _storage.read(key: _tokenKey);
-      if (token != null) {
-        await http.post(
-          Uri.parse('${AppConstants.apiBase}/api/logout'),
-          headers: {'Authorization': 'Bearer $token'},
-        );
-      }
-    } catch (_) {}
-    _currentUser = null;
-    await _storage.deleteAll();
-  }
-
-  // ========== MONITORING ==========
-  Future<void> _logStaffLogin(String identifier, String role) async {
-    try {
-      final msg = '📱 *Emobies Staff Login*\n'
-          '👤 $identifier\n'
-          '🔑 Role: $role\n'
-          '⏰ ${DateTime.now().toIso8601String()}';
-
-      if (AppConstants.telegramBotToken.isNotEmpty) {
-        await http.post(
-          Uri.parse('https://api.telegram.org/bot${AppConstants.telegramBotToken}/sendMessage'),
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({
-            'chat_id': AppConstants.telegramChatId,
-            'text': msg,
-            'parse_mode': 'Markdown',
-          }),
-        );
-      }
-
-      if (AppConstants.discordWebhookUrl.isNotEmpty) {
-        await http.post(
-          Uri.parse(AppConstants.discordWebhookUrl),
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({
-            'content': msg,
-            'username': 'Emobies Monitor',
-          }),
-        );
-      }
-    } catch (e) {
-      log('Monitor log error: $e');
-    }
-  }
 }
-=======
-// [FULL AUTH_SERVICE CODE FROM PREVIOUS MESSAGE]
->>>>>>> 3b20a3a (feat: add password hashing, rate limiting, token refresh)
