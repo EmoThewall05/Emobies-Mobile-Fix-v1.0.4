@@ -52,6 +52,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
       final coins = prefs.getInt(AppConstants.prefEmoCoins) ?? 0;
 
       final summary = await _ai.getDashboardSummary(
+        pendingPayments: [],
         activeRepairs: active,
         role: 'customer',
       );

@@ -279,6 +279,6 @@ class _SupervisorDashboardState extends State<SupervisorDashboard> {
   }
 
   Widget _buildStaffTab() {
-    return const StaffManagementScreen();
+    return const StaffManagementScreen(staffList: []);
   }
 }

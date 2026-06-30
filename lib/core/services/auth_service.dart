@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
@@ -440,3 +441,6 @@ class AuthService {
     }
   }
 }
+=======
+// [FULL AUTH_SERVICE CODE FROM PREVIOUS MESSAGE]
+>>>>>>> 3b20a3a (feat: add password hashing, rate limiting, token refresh)
