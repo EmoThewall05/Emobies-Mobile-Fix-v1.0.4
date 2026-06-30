@@ -95,7 +95,7 @@ class AppRoutes {
       case registerComplaint:
         return _slideUpRoute(const ComplaintRegisterScreen());
       case emoCoins:
-        return _fadeRoute(const EmoCoinScreen());
+        return _fadeRoute(const EmocoinScreen());
       case cryptoWallet:
         return _fadeRoute(const CryptoWalletScreen());
       case aiChat:
@@ -116,12 +116,12 @@ class AppRoutes {
       case supervisorChat:
         final args = settings.arguments as Map<String, dynamic>?;
         return _slideRoute(ChatScreen(
-          chatId: args?['chatId'] ?? '',
+          complaintId: args?['chatId'] ?? '',
           title: args?['title'] ?? 'Chat',
           participants: args?['participants'] ?? [],
         ));
       case supervisorStaff:
-        return _fadeRoute(const StaffManagementScreen());
+        return _fadeRoute(const StaffManagementScreen(staffList: []));
       case supervisorImages:
         final urls = settings.arguments as List<String>?;
         return _slideRoute(ImageViewerScreen(imageUrls: urls ?? []));

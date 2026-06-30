@@ -4,6 +4,7 @@ class AppConstants {
   static const String supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
   static const String emoKeyBase = 'https://emo-key.vercel.app';
   static const String cfAiBase = 'https://emobies-ai.meradivin.workers.dev';
+  static const String cloudflareAiBase = 'https://emobies-ai.meradivin.workers.dev';
 
   static const String telegramBotToken = String.fromEnvironment('TELEGRAM_BOT_TOKEN');
   static const String telegramChatId = String.fromEnvironment('TELEGRAM_CHAT_ID');
@@ -18,6 +19,8 @@ class AppConstants {
   static const String roleStaff = 'staff';
   static const String roleSupervisor = 'supervisor';
   static const String roleSuperAdmin = 'super_admin';
+  static const String roleDeliveryBoy = 'delivery_boy';
+  static const String roleServiceCenter = 'service_center';
 
   // EmoCoin settings
   static const int coinsForCryptoExchange = 1000;

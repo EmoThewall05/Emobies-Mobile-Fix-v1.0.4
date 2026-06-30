@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import '../models/chat_room_model.dart';
 import 'dart:async';
 import 'dart:developer';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -208,7 +209,7 @@ class SupabaseService {
 
   // ─── Storage ───
 
-  Future<String> uploadImage(String bucket, String path, List<int> Uint8List.fromList(bytes), {String? contentType}) async {
+  Future<String> uploadImage(String bucket, String path, List<int> bytes, {String? contentType}) async {
     await _client.storage.from(bucket).uploadBinary(
       path,
       Uint8List.fromList(bytes),
