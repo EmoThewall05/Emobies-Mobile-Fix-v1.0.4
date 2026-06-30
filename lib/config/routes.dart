@@ -167,15 +167,15 @@ class AppRoutes {
 
   static String getInitialRoute(String? role) {
     switch (role) {
-      case AppConstants.roleCustomer:
+      case 'customer':
         return customerHome;
-      case AppConstants.roleSupervisor:
+      case 'supervisor':
         return supervisorDashboard;
-      case AppConstants.roleDeliveryBoy:
+      case 'delivery_boy':
         return deliveryDashboard;
-      case AppConstants.roleServiceCenter:
+      case 'service_center':
         return scDashboard;
-      case AppConstants.roleSuperAdmin:
+      case 'super_admin':
         return adminDashboard;
       default:
         return login;

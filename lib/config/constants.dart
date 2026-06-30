@@ -35,4 +35,25 @@ class AppConstants {
   // Login security
   static const int maxLoginAttempts = 5;
   static const Duration lockoutDuration = Duration(minutes: 15);
+
+  // Role constants
+  static const String roleCustomer = 'customer';
+  static const String roleSupervisor = 'supervisor';
+  static const String roleDeliveryBoy = 'delivery_boy';
+  static const String roleServiceCenter = 'service_center';
+  static const String roleSuperAdmin = 'super_admin';
+
+  // Auth constants
+  static const int maxLoginAttempts = 5;
+  static const Duration lockoutDuration = Duration(minutes: 30);
+
+  // Coin constants
+  static const String prefEmoCoins = 'emo_coins';
+  static const String prefDailyCoinDate = 'daily_coin_date';
+  static const int dailyLoginCoins = 10;
+  static const int coinsForCryptoExchange = 100;
+  static const double coinRupeeValue = 1.0;
+
+  // Cloudflare
+  static const String cloudflareAiBase = 'https://api.cloudflare.com/client/v4/ai';
 }
