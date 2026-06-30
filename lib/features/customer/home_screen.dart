@@ -82,8 +82,8 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
         }
       }
 
-      final newBalance = (prefs.getInt(AppConstants.prefEmoCoins) ?? 0) + AppConstants.dailyLoginCoins;
-      await prefs.setInt(AppConstants.prefEmoCoins, newBalance);
+      final newBalance = (prefs.getInt(AppConstants.prefEmoCoins) ?? 0) + AppConstants.dailyLoginCoins as int;
+      await prefs.setInt(AppConstants.prefEmoCoins, newBalance.toInt());
       await prefs.setString(AppConstants.prefDailyCoinDate, now.toIso8601String());
 
       setState(() => _coinBalance = newBalance.toInt());
