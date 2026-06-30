@@ -115,11 +115,7 @@ class AppRoutes {
         return _slideRoute(DeliveryTrackingScreen(deliveryBoyId: id));
       case supervisorChat:
         final args = settings.arguments as Map<String, dynamic>?;
-        return _slideRoute(ChatScreen(
-          complaintId: args?['chatId'] ?? '',
-          title: args?['title'] ?? 'Chat',
-          participants: args?['participants'] ?? [],
-        ));
+        return _slideRoute(ChatScreen(complaintId: args?[chatId] ?? ''));
       case supervisorStaff:
         return _fadeRoute(const StaffManagementScreen(staffList: []));
       case supervisorImages:
