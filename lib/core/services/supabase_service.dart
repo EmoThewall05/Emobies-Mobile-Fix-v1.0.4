@@ -168,7 +168,7 @@ class SupabaseService {
         .select()
         .contains('participants', [userId])
         .order('updated_at', ascending: false);
-    return (res).map((e) => ChatMessage.fromJson(e)).toList();
+    return (res).map((e) => ChatRoom.fromJson(e)).toList();
   }
 
   Future<List<ChatMessage>> getChatMessages(String roomId, {int limit = 50}) async {
@@ -178,7 +178,7 @@ class SupabaseService {
         .eq('room_id', roomId)
         .order('created_at', ascending: false)
         .limit(limit);
-    return (res).map((e) => ChatMessage.fromJson(e)).toList();
+    return (res).map((e) => ChatRoom.fromJson(e)).toList();
   }
 
   Future<void> sendMessage(Map<String, dynamic> data) async {
