@@ -158,7 +158,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   }
 
   Future<void> _biometricLogin() async {
-    final authed = await _auth.authenticateWithBiometric();
+    final authed = await _auth.authenticateWithBiometrics();
     if (authed) {
       final role = await _auth.getRole();
       if (!mounted) return;

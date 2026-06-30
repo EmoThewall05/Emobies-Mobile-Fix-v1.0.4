@@ -277,4 +277,14 @@ class AuthService {
       if (token != null) "Authorization": "Bearer $token",
     };
   }
+
+  // Alias for backward compatibility
+  Future<bool> isBiometricAvailable() => canCheckBiometrics();
+
+  Future<bool> authenticateWithBiometric() => authenticateWithBiometrics();
+
+  // Alias for backward compatibility
+  Future<bool> isBiometricAvailable() => canCheckBiometrics();
+
+  Future<bool> authenticateWithBiometric() => authenticateWithBiometrics();
 }

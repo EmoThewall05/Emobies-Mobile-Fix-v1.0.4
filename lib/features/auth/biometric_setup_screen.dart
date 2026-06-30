@@ -23,7 +23,7 @@ class _BiometricSetupScreenState extends State<BiometricSetupScreen> {
   }
 
   Future<void> _check() async {
-    final avail = await _auth.isBiometricAvailable();
+    final avail = await _auth.canCheckBiometrics();
     final en = await _auth.isBiometricEnabled();
     setState(() {
       _available = avail;
@@ -34,7 +34,7 @@ class _BiometricSetupScreenState extends State<BiometricSetupScreen> {
 
   Future<void> _toggle(bool value) async {
     if (value) {
-      final authed = await _auth.authenticateWithBiometric(
+      final authed = await _auth.authenticateWithBiometrics(
         reason: 'Enable biometric login for Emobies',
       );
       if (!authed) return;

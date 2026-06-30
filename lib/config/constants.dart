@@ -19,3 +19,11 @@ class AppConstants {
   static const double coinRupeeValue = 0.10;
   static const int dailyLoginCoins = 10;
 }
+
+  // SharedPreferences keys
+  static const String prefEmoCoins = 'ew_emo_coins';
+  static const String prefDailyCoinDate = 'ew_daily_coin_date';
+
+  // SharedPreferences keys
+  static const String prefEmoCoins = 'ew_emo_coins';
+  static const String prefDailyCoinDate = 'ew_daily_coin_date';
