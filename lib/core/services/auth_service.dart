@@ -173,6 +173,95 @@ class AuthService {
     }
   }
 
+  Future<Map<String, dynamic>> staffLogin({
+    required String email,
+    required String password,
+    required String emoKey,
+  }) async {
+    if (!await _checkRateLimit()) {
+      return {'success': false, 'error': 'Too many attempts. Try again in 1 minute.'};
+    }
+
+    try {
+      final salt = _generateSalt();
+      final hashedPassword = _hashPassword(password, salt);
+
+      final res = await http.post(
+        Uri.parse('${AppConstants.apiBase}/api/staff/login'),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Password-Salt': salt,
+        },
+        body: jsonEncode({
+          'email': email,
+          'password_hash': hashedPassword,
+          'salt': salt,
+          'emo_key': emoKey,
+        }),
+      ).timeout(const Duration(seconds: 10));
+
+      final data = jsonDecode(res.body) as Map<String, dynamic>;
+
+      if (res.statusCode == 200 && data['token'] != null) {
+        final role = data['role'] as String? ?? 'staff';
+        final userData = data['user'] as Map<String, dynamic>? ?? {};
+
+        await _storage.write(key: _tokenKey, value: data['token']);
+        await _storage.write(key: _refreshKey, value: data['refresh_token'] ?? '');
+        await _storage.write(key: _roleKey, value: role);
+        await _storage.write(key: _userKey, value: jsonEncode(userData));
+
+        _currentUser = UserModel.fromJson(userData);
+
+        return {'success': true, 'role': role};
+      }
+      return {'success': false, 'error': data['error'] ?? 'Invalid credentials'};
+    } catch (e) {
+      log('Staff login error: $e');
+      return {'success': false, 'error': 'Cannot reach server. Check connection.'};
+    }
+  }
+
+  Future<Map<String, dynamic>> superAdminLogin({
+    required String password,
+    required String secretKey,
+  }) async {
+    if (!await _checkRateLimit()) {
+      return {'success': false, 'error': 'Too many attempts. Try again in 1 minute.'};
+    }
+
+    try {
+      final res = await http.post(
+        Uri.parse('${AppConstants.apiBase}/api/admin/login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'password': password,
+          'secret_key': secretKey,
+        }),
+      ).timeout(const Duration(seconds: 10));
+
+      final data = jsonDecode(res.body) as Map<String, dynamic>;
+
+      if (res.statusCode == 200 && data['token'] != null) {
+        final role = 'super_admin';
+        final userData = data['user'] as Map<String, dynamic>? ?? {};
+
+        await _storage.write(key: _tokenKey, value: data['token']);
+        await _storage.write(key: _refreshKey, value: data['refresh_token'] ?? '');
+        await _storage.write(key: _roleKey, value: role);
+        await _storage.write(key: _userKey, value: jsonEncode(userData));
+
+        _currentUser = UserModel.fromJson(userData);
+
+        return {'success': true, 'role': role};
+      }
+      return {'success': false, 'error': data['error'] ?? 'Invalid credentials'};
+    } catch (e) {
+      log('Super admin login error: $e');
+      return {'success': false, 'error': 'Cannot reach server. Check connection.'};
+    }
+  }
+
   Future<Map<String, dynamic>> signUp({
     required String name,
     required String phone,
@@ -255,10 +344,10 @@ class AuthService {
     }
   }
 
-  Future<bool> authenticateWithBiometrics() async {
+  Future<bool> authenticateWithBiometrics({String? reason}) async {
     try {
       return await _localAuth.authenticate(
-        localizedReason: 'Authenticate to access Emobies',
+        localizedReason: reason ?? 'Authenticate to access Emobies',
         options: const AuthenticationOptions(
           biometricOnly: false,
           stickyAuth: true,
@@ -270,6 +359,12 @@ class AuthService {
     }
   }
 
+  // Alias for backward compatibility
+  Future<bool> isBiometricAvailable() => canCheckBiometrics();
+
+  Future<bool> authenticateWithBiometric({String? reason}) => 
+      authenticateWithBiometrics(reason: reason);
+
   Future<Map<String, String>> getAuthHeaders() async {
     final token = await _storage.read(key: _tokenKey);
     return {
@@ -277,14 +372,4 @@ class AuthService {
       if (token != null) "Authorization": "Bearer $token",
     };
   }
-
-  // Alias for backward compatibility
-  Future<bool> isBiometricAvailable() => canCheckBiometrics();
-
-  Future<bool> authenticateWithBiometric() => authenticateWithBiometrics();
-
-  // Alias for backward compatibility
-  Future<bool> isBiometricAvailable() => canCheckBiometrics();
-
-  Future<bool> authenticateWithBiometric() => authenticateWithBiometrics();
 }
