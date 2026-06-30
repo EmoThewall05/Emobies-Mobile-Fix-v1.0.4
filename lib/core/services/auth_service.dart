@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:math';
+import 'dart:math' hide log;
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:local_auth/local_auth.dart';

@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'dart:async';
 import 'dart:developer';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -166,7 +167,7 @@ class SupabaseService {
         .select()
         .contains('participants', [userId])
         .order('updated_at', ascending: false);
-    return (res).map((e) => ChatRoom.fromJson(e)).toList();
+    return (res).map((e) => ChatMessage.fromJson(e)).toList();
   }
 
   Future<List<ChatMessage>> getChatMessages(String roomId, {int limit = 50}) async {
@@ -207,10 +208,10 @@ class SupabaseService {
 
   // ─── Storage ───
 
-  Future<String> uploadImage(String bucket, String path, List<int> bytes, {String? contentType}) async {
+  Future<String> uploadImage(String bucket, String path, List<int> Uint8List.fromList(bytes), {String? contentType}) async {
     await _client.storage.from(bucket).uploadBinary(
       path,
-      bytes,
+      Uint8List.fromList(bytes),
       fileOptions: FileOptions(
         contentType: contentType ?? 'image/jpeg',
         upsert: true,
