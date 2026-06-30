@@ -15,7 +15,9 @@ class ChatMessage {
     this.isRead = false,
   });
 
+  // Aliases for backward compatibility
   String get message => content;
+  DateTime get createdAt => timestamp;
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
     return ChatMessage(
@@ -23,7 +25,7 @@ class ChatMessage {
       senderId: json['sender_id'] ?? json['senderId'] ?? '',
       senderName: json['sender_name'] ?? json['senderName'] ?? '',
       content: json['content'] ?? json['message'] ?? '',
-      timestamp: DateTime.tryParse(json['timestamp'] ?? '') ?? DateTime.now(),
+      timestamp: DateTime.tryParse(json['timestamp'] ?? json['createdAt'] ?? '') ?? DateTime.now(),
       isRead: json['is_read'] ?? json['isRead'] ?? false,
     );
   }

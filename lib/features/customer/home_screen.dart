@@ -86,7 +86,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
       await prefs.setInt(AppConstants.prefEmoCoins, newBalance);
       await prefs.setString(AppConstants.prefDailyCoinDate, now.toIso8601String());
 
-      setState(() => _coinBalance = newBalance);
+      setState(() => _coinBalance = newBalance.toInt());
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
