@@ -373,18 +373,4 @@ class AuthService {
     };
   }
 
-  Future<bool> isBiometricAvailable() async => false;
-
-  Future<Map<String, dynamic>> staffLogin({
-    required String email,
-    required String password,
-    required String emoKey,
-  }) async => {'success': false, 'error': 'Not implemented'};
-
-  Future<Map<String, dynamic>> superAdminLogin({
-    required String password,
-    required String secretKey,
-  }) async => {'success': false, 'error': 'Not implemented'};
-
-  Future<bool> authenticateWithBiometric() async => false;
 }

@@ -116,7 +116,6 @@ class AppRoutes {
       case supervisorChat:
         final args = settings.arguments as Map<String, dynamic>?;
         return _slideRoute(ChatScreen(complaintId: args?['chatId'] ?? ''));
-        return _slideRoute(ImageViewerScreen(imageUrls: urls ?? []));
 
       // Delivery
       case deliveryDashboard:
