@@ -269,4 +269,12 @@ class AuthService {
       return false;
     }
   }
+
+  Future<Map<String, String>> getAuthHeaders() async {
+    final token = await _storage.read(key: _tokenKey);
+    return {
+      "Content-Type": "application/json",
+      if (token != null) "Authorization": "Bearer $token",
+    };
+  }
 }
