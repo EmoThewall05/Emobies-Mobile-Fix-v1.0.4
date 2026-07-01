@@ -2,7 +2,7 @@
 
 **Mobile Repair. Reimagined.**
 
-Built from Dubai 🇦🇪 · Powered by Seven Brains 🧠 · Made for Kerala 🌿
+Built from Dubai 🇦🇪 · Powered by Seven Brains 🧠 · Made for Kerala 🌿 India 🇮🇳
 
 ---
 
