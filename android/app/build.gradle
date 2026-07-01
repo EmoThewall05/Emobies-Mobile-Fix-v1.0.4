@@ -5,7 +5,15 @@ plugins {
 }
 
 android {
-    namespace = "com.nxtbit.emobies"
+    signingConfigs {
+        release {
+            storeFile file("emobies_decoded.p12")
+            storePassword System.getenv("KEYSTORE_PASSWORD")
+            keyAlias System.getenv("KEY_ALIAS")
+            keyPassword System.getenv("KEY_PASSWORD")
+        }
+    }
+    namespace = "com.nxtbit.emobies_24"
     compileSdk = 35
     ndkVersion = flutter.ndkVersion
 
@@ -19,7 +27,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.nxtbit.emobies"
+        applicationId "com.nxtbit.emobies_24"
         minSdk = 21
         targetSdk = 35
         versionCode = 1
@@ -28,7 +36,7 @@ android {
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.debug
+            signingConfig = signingConfigs.release
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
