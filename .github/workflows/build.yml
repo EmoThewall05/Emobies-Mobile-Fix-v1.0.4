@@ -35,11 +35,26 @@ jobs:
       - run: flutter pub run flutter_launcher_icons
 
       - name: Build AAB
-        run: flutter build appbundle --release
+        run: |
+          flutter build appbundle --release --verbose || true
+          echo "===== SEARCHING FOR ANY AAB FILE ====="
+          find . -name "*.aab" -type f 2>/dev/null || echo "No AAB found anywhere"
+          echo "===== RUNNING GRADLE DIRECTLY WITH STACKTRACE ====="
+          cd android && ./gradlew bundleRelease --stacktrace --info > ../gradle_full_log.txt 2>&1 || true
+          cd ..
+          echo "===== LAST 150 LINES OF GRADLE LOG ====="
+          tail -150 gradle_full_log.txt
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Upload full gradle log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-full-log
+          path: gradle_full_log.txt
 
       - name: Verify aab exists
         run: |
