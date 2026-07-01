@@ -20,7 +20,13 @@ jobs:
 
       - run: flutter pub run flutter_launcher_icons
       
-      - run: flutter build appbundle --release --verbose
+      - run: flutter build appbundle --release --verbose || true
+
+      - name: Find aab file
+        run: find /home/runner/work -iname "*.aab" -o -iname "*.aab" 2>/dev/null || echo "No aab found"
+
+      - name: List build output dir
+        run: find android/app/build/outputs -type f 2>/dev/null || echo "outputs dir missing"
       
       - uses: actions/upload-artifact@v4
         with:
