@@ -26,8 +26,8 @@ void main() async {
   // Initialize Supabase
   try {
     await SupabaseService.initialize();
-  } catch (e) {
-    log('Supabase init error: $e');
+  } catch (e, stackTrace) {
+    log('Supabase init error: $e', error: e, stackTrace: stackTrace);
   }
 
   runApp(const EmobiesApp());
@@ -55,16 +55,23 @@ class _EmobiesAppState extends State<EmobiesApp> {
   Future<void> _init() async {
     try {
       final isAuthed = await _auth.init();
+      String? role;
       if (isAuthed) {
-        _role = await _auth.getRole();
+        role = await _auth.getRole();
       }
+
+      if (!mounted) return;
+
       setState(() {
         _authed = isAuthed;
+        _role = role;
         _ready = true;
       });
-    } catch (e) {
-      log('App init error: $e');
-      setState(() => _ready = true);
+    } catch (e, stackTrace) {
+      log('App init error: $e', error: e, stackTrace: stackTrace);
+      if (mounted) {
+        setState(() => _ready = true);
+      }
     }
   }
 
@@ -73,6 +80,7 @@ class _EmobiesAppState extends State<EmobiesApp> {
     if (!_ready) {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
+        theme: EmobiesTheme.theme,
         home: Scaffold(
           backgroundColor: EmobiesTheme.bg,
           body: Center(
