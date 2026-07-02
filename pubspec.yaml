@@ -1,5 +1,9 @@
 name: emobies
-version: 2.0.0+203
+<<<<<<< HEAD
+version: 2.0.0+205
+=======
+version: 2.0.0+205
+>>>>>>> e16ea64 (Force-remove SEND_SMS and CALL_PHONE via tools:node=remove)
 publish_to: none
 description: Emobies Mobile Repair Platform - Flutter
 
