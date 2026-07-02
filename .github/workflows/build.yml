@@ -35,7 +35,15 @@ jobs:
       - run: flutter pub run flutter_launcher_icons
 
       - name: Build AAB
-        run: flutter build appbundle --release
+        run: |
+          flutter build appbundle --release --verbose || true
+          echo "===== SEARCHING FOR ANY AAB FILE ====="
+          find . -name "*.aab" -type f 2>/dev/null || echo "No AAB found anywhere"
+          echo "===== RUNNING GRADLE DIRECTLY WITH STACKTRACE ====="
+          cd android && ./gradlew bundleRelease --stacktrace --info > ../gradle_full_log.txt 2>&1 || true
+          cd ..
+          echo "===== LAST 150 LINES OF GRADLE LOG ====="
+          tail -150 gradle_full_log.txt
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
@@ -45,14 +53,16 @@ jobs:
         if: always()
         run: |
           echo "===== SEARCHING FOR MANIFEST MERGER REPORT ====="
-          find . -iname "manifest-merger-release-report.txt" -exec echo "FOUND: {}" \; -exec grep -A 3 "SEND_SMS\|CALL_PHONE" {} \;
+          find . -iname "manifest-merger-release-report.txt" -exec echo "FOUND: {}" \; -exec grep -B 2 -A 3 "SEND_SMS\|CALL_PHONE" {} \;
 
-      - name: Upload manifest merger report
+      - name: Upload logs and reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: manifest-merger-report
-          path: "**/manifest-merger-release-report.txt"
+          name: debug-logs
+          path: |
+            gradle_full_log.txt
+            **/manifest-merger-release-report.txt
 
       - name: Verify aab exists
         run: |
