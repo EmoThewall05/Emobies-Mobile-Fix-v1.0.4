@@ -24,7 +24,7 @@ jobs:
 
       - name: Install NDK
         run: |
-          echo "y" | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --install "ndk;27.0.12077973"
+          echo "y" | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --install "ndk;28.0.13004108"
 
       - name: Decode keystore
         run: |
