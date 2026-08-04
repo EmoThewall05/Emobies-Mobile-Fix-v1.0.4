@@ -33,22 +33,11 @@ jobs:
       run: flutter analyze || true
 
     - name: Build APK
-      continue-on-error: true
       env:
         KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-      run: flutter build apk --release --verbose
-
-    - name: Search for APK immediately after build
-      if: always()
-      run: |
-        echo "=== Searching entire build directory ==="
-        find build -type f -name "*.apk" 2>/dev/null
-        echo "=== Listing build/app/outputs structure ==="
-        find build/app/outputs -type d 2>/dev/null
-        echo "=== Full build/app/outputs listing ==="
-        find build/app/outputs -type f 2>/dev/null
+      run: flutter build apk --release
 
     - name: Build AAB (for Play Store)
       env:
