@@ -25,6 +25,10 @@ jobs:
     - name: Generate launcher icons
       run: flutter pub run flutter_launcher_icons
 
+    - name: Decode keystore
+      run: |
+        echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/emobies_decoded.p12
+
     - name: Run analyzer
       run: flutter analyze || true
 
