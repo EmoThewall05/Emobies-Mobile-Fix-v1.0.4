@@ -38,8 +38,9 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs.release
-            minifyEnabled true
-            shrinkResources true
+            // TEMP DIAGNOSTIC: minify/shrink OFF to test blank-screen issue
+            minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
