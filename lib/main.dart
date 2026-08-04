@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,35 +7,54 @@ import 'config/routes.dart';
 import 'core/services/auth_service.dart';
 import 'core/services/supabase_service.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+String? _fatalError;
+String? _fatalStack;
 
-  // Lock orientation
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
+void main() {
+  runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
 
-  // System UI
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.light,
-    systemNavigationBarColor: Color(0xFF0C0F14),
-    systemNavigationBarIconBrightness: Brightness.light,
-  ));
+    FlutterError.onError = (FlutterErrorDetails details) {
+      _fatalError = details.exceptionAsString();
+      _fatalStack = details.stack.toString();
+      log('FlutterError: $_fatalError', error: details.exception, stackTrace: details.stack);
+    };
 
-  // Initialize Supabase
-  try {
-    await SupabaseService.initialize();
-  } catch (e, stackTrace) {
-    log('Supabase init error: $e', error: e, stackTrace: stackTrace);
-  }
+    // Lock orientation
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
 
-  runApp(const EmobiesApp());
+    // System UI
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      systemNavigationBarColor: Color(0xFF0C0F14),
+      systemNavigationBarIconBrightness: Brightness.light,
+    ));
+
+    // Initialize Supabase
+    try {
+      await SupabaseService.initialize();
+    } catch (e, stackTrace) {
+      _fatalError = 'Supabase init error: $e';
+      _fatalStack = stackTrace.toString();
+      log('Supabase init error: $e', error: e, stackTrace: stackTrace);
+    }
+
+    runApp(const EmobiesApp());
+  }, (error, stackTrace) {
+    _fatalError = error.toString();
+    _fatalStack = stackTrace.toString();
+    log('Uncaught zone error: $error', error: error, stackTrace: stackTrace);
+    runApp(EmobiesApp(startupError: '$error\n\n$stackTrace'));
+  });
 }
 
 class EmobiesApp extends StatefulWidget {
-  const EmobiesApp({super.key});
+  final String? startupError;
+  const EmobiesApp({super.key, this.startupError});
 
   @override
   State<EmobiesApp> createState() => _EmobiesAppState();
@@ -49,7 +69,11 @@ class _EmobiesAppState extends State<EmobiesApp> {
   @override
   void initState() {
     super.initState();
-    _init();
+    if (widget.startupError == null) {
+      _init();
+    } else {
+      _ready = true;
+    }
   }
 
   Future<void> _init() async {
@@ -68,6 +92,8 @@ class _EmobiesAppState extends State<EmobiesApp> {
         _ready = true;
       });
     } catch (e, stackTrace) {
+      _fatalError = 'App init error: $e';
+      _fatalStack = stackTrace.toString();
       log('App init error: $e', error: e, stackTrace: stackTrace);
       if (mounted) {
         setState(() => _ready = true);
@@ -77,6 +103,28 @@ class _EmobiesAppState extends State<EmobiesApp> {
 
   @override
   Widget build(BuildContext context) {
+    final errorToShow = widget.startupError ?? _fatalError;
+
+    if (errorToShow != null) {
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          backgroundColor: const Color(0xFF0C0F14),
+          appBar: AppBar(
+            backgroundColor: const Color(0xFF0C0F14),
+            title: const Text('Startup Error', style: TextStyle(color: Colors.white)),
+          ),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: SelectableText(
+              '$errorToShow\n\n${_fatalStack ?? ""}',
+              style: const TextStyle(color: Colors.redAccent, fontSize: 12, fontFamily: 'monospace'),
+            ),
+          ),
+        ),
+      );
+    }
+
     if (!_ready) {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
