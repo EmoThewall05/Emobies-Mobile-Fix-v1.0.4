@@ -46,6 +46,10 @@ jobs:
         KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
       run: flutter build appbundle --release
 
+
+    - name: Find APK output
+      if: always()
+      run: find . -name "*.apk" -type f 2>/dev/null || echo "No APK found anywhere"
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
       with:
