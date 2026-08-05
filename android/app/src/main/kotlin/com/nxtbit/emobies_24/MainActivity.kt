@@ -10,18 +10,23 @@ import java.io.StringWriter
 
 class MainActivity: FlutterActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        val appCrash = EmobiesApplication.crashInfo
+        if (appCrash != null) {
+            showCrashScreen(appCrash)
+            return
+        }
         try {
             super.onCreate(savedInstanceState)
         } catch (t: Throwable) {
-            showCrashScreen(t)
+            val sw = StringWriter()
+            t.printStackTrace(PrintWriter(sw))
+            showCrashScreen("ACTIVITY CRASH:\n\n$t\n\n$sw")
         }
     }
 
-    private fun showCrashScreen(t: Throwable) {
-        val sw = StringWriter()
-        t.printStackTrace(PrintWriter(sw))
+    private fun showCrashScreen(message: String) {
         val tv = TextView(this).apply {
-            text = "NATIVE CRASH:\n\n$t\n\n$sw"
+            text = message
             setTextColor(Color.RED)
             setBackgroundColor(Color.WHITE)
             textSize = 10f
