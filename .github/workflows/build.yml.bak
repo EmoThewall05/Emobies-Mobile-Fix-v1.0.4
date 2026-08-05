@@ -36,7 +36,7 @@ jobs:
 
       - name: Build AAB
         run: |
-          flutter build appbundle --release --verbose --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} || true
+          flutter build appbundle --release --verbose || true
           echo "===== SEARCHING FOR ANY AAB FILE ====="
           find . -name "*.aab" -type f 2>/dev/null || echo "No AAB found anywhere"
           echo "===== RUNNING GRADLE DIRECTLY WITH STACKTRACE ====="
