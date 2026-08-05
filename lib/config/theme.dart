@@ -65,7 +65,7 @@ class EmobiesTheme {
       type: BottomNavigationBarType.fixed,
       elevation: 8,
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: card,
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -123,7 +123,7 @@ class EmobiesTheme {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       behavior: SnackBarBehavior.floating,
     ),
-    dialogTheme: DialogTheme(
+    dialogTheme: DialogThemeData(
       backgroundColor: card,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     ),
