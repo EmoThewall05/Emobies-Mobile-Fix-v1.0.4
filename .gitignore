@@ -33,3 +33,4 @@ ios/build/
 *.log
 *.swp
 .DS_Store
+node_modules/
