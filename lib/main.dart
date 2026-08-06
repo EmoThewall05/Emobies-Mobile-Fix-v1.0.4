@@ -20,8 +20,8 @@ void main() {
       log('FlutterError: $_fatalError', error: details.exception, stackTrace: details.stack);
     };
 
-    // Lock orientation
-    await SystemChrome.setPreferredOrientations([
+    // Lock orientation (fire-and-forget: don't block main() on this)
+    SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
