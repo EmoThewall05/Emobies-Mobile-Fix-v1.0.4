@@ -34,9 +34,12 @@ void main() {
       systemNavigationBarIconBrightness: Brightness.light,
     ));
 
-    // Initialize Supabase
+    // Initialize Supabase (with timeout so a hung network call can't freeze main())
     try {
-      await SupabaseService.initialize();
+      await SupabaseService.initialize().timeout(
+        const Duration(seconds: 10),
+        onTimeout: () => throw Exception('Supabase init timed out after 10s'),
+      );
     } catch (e, stackTrace) {
       _fatalError = 'Supabase init error: $e';
       _fatalStack = stackTrace.toString();
