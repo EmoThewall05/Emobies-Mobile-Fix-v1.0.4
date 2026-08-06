@@ -2,9 +2,12 @@ package com.nxtbit.emobies_24
 
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.widget.ScrollView
 import android.widget.TextView
 import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.engine.FlutterEngine
 import java.io.PrintWriter
 import java.io.StringWriter
 
@@ -15,12 +18,38 @@ class MainActivity: FlutterActivity() {
             showCrashScreen(appCrash)
             return
         }
+
         try {
             super.onCreate(savedInstanceState)
         } catch (t: Throwable) {
             val sw = StringWriter()
             t.printStackTrace(PrintWriter(sw))
             showCrashScreen("ACTIVITY CRASH:\n\n$t\n\n$sw")
+            return
+        }
+
+        // Watchdog: if Flutter hasn't rendered anything in 6 seconds, show diagnostic screen
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (!isFinishing) {
+                showCrashScreen(
+                    "WATCHDOG TIMEOUT\n\n" +
+                    "Flutter engine did not render within 6 seconds.\n" +
+                    "This usually means main() threw before runApp(), " +
+                    "or the engine failed to attach.\n\n" +
+                    "Check: Supabase init, dart-define values, or a native plugin crash.\n\n" +
+                    "flutterEngine attached: ${flutterEngine != null}"
+                )
+            }
+        }, 6000)
+    }
+
+    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+        try {
+            super.configureFlutterEngine(flutterEngine)
+        } catch (t: Throwable) {
+            val sw = StringWriter()
+            t.printStackTrace(PrintWriter(sw))
+            showCrashScreen("ENGINE CONFIG CRASH:\n\n$t\n\n$sw")
         }
     }
 
