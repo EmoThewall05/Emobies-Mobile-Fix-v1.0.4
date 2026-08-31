@@ -11,7 +11,7 @@ String? _fatalError;
 String? _fatalStack;
 
 void main() {
-  runZonedGuarded(() async {
+  runZonedGuarded(() {
     WidgetsFlutterBinding.ensureInitialized();
 
     FlutterError.onError = (FlutterErrorDetails details) {
@@ -34,18 +34,8 @@ void main() {
       systemNavigationBarIconBrightness: Brightness.light,
     ));
 
-    // Initialize Supabase (with timeout so a hung network call can't freeze main())
-    try {
-      await SupabaseService.initialize().timeout(
-        const Duration(seconds: 10),
-        onTimeout: () => throw Exception('Supabase init timed out after 10s'),
-      );
-    } catch (e, stackTrace) {
-      _fatalError = 'Supabase init error: $e';
-      _fatalStack = stackTrace.toString();
-      log('Supabase init error: $e', error: e, stackTrace: stackTrace);
-    }
-
+    // Render immediately — do NOT await anything here.
+    // Supabase init happens later, inside the widget, after first frame.
     runApp(const EmobiesApp());
   }, (error, stackTrace) {
     _fatalError = error.toString();
@@ -81,6 +71,20 @@ class _EmobiesAppState extends State<EmobiesApp> {
 
   Future<void> _init() async {
     try {
+      // Initialize Supabase here, after the first frame is already on screen.
+      try {
+        await SupabaseService.initialize().timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => throw Exception('Supabase init timed out after 10s'),
+        );
+      } catch (e, stackTrace) {
+        log('Supabase init error: $e', error: e, stackTrace: stackTrace);
+        _fatalError = 'Supabase init error: $e';
+        _fatalStack = stackTrace.toString();
+        if (mounted) setState(() => _ready = true);
+        return;
+      }
+
       final isAuthed = await _auth.init();
       String? role;
       if (isAuthed) {
