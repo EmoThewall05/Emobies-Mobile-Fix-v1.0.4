@@ -12,6 +12,10 @@ import java.io.PrintWriter
 import java.io.StringWriter
 
 class MainActivity: FlutterActivity() {
+    private val watchdogHandler = Handler(Looper.getMainLooper())
+    private var watchdogRunnable: Runnable? = null
+    private var firstFrameRendered = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val appCrash = EmobiesApplication.crashInfo
         if (appCrash != null) {
@@ -28,9 +32,10 @@ class MainActivity: FlutterActivity() {
             return
         }
 
-        // Watchdog: if Flutter hasn't rendered anything in 6 seconds, show diagnostic screen
-        Handler(Looper.getMainLooper()).postDelayed({
-            if (!isFinishing) {
+        // Watchdog: if Flutter hasn't rendered anything in 6 seconds, show diagnostic screen.
+        // Cancelled automatically in onFlutterUiDisplayed() once the first frame is on screen.
+        watchdogRunnable = Runnable {
+            if (!isFinishing && !firstFrameRendered) {
                 showCrashScreen(
                     "WATCHDOG TIMEOUT\n\n" +
                     "Flutter engine did not render within 6 seconds.\n" +
@@ -40,7 +45,14 @@ class MainActivity: FlutterActivity() {
                     "flutterEngine attached: ${flutterEngine != null}"
                 )
             }
-        }, 6000)
+        }
+        watchdogHandler.postDelayed(watchdogRunnable!!, 6000)
+    }
+
+    override fun onFlutterUiDisplayed() {
+        super.onFlutterUiDisplayed()
+        firstFrameRendered = true
+        watchdogRunnable?.let { watchdogHandler.removeCallbacks(it) }
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -51,6 +63,11 @@ class MainActivity: FlutterActivity() {
             t.printStackTrace(PrintWriter(sw))
             showCrashScreen("ENGINE CONFIG CRASH:\n\n$t\n\n$sw")
         }
+    }
+
+    override fun onDestroy() {
+        watchdogRunnable?.let { watchdogHandler.removeCallbacks(it) }
+        super.onDestroy()
     }
 
     private fun showCrashScreen(message: String) {
