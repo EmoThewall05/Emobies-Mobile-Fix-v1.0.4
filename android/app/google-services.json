@@ -1,73 +1,45 @@
 {
   "project_info": {
-    "project_number": "194436853805",
-    "project_id": "gen-lang-client-0510617623",
-    "storage_bucket": "gen-lang-client-0510617623.firebasestorage.app"
+    "project_number": "263206021572",
+    "project_id": "emobies",
+    "storage_bucket": "emobies.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:194436853805:android:99bf3a6d97b82215a808a4",
+        "mobilesdk_app_id": "1:263206021572:android:d9755e23dac637a6759c91",
         "android_client_info": {
-          "package_name": "com.emobies.emowall"
+          "package_name": "com.nxtbit.emobies_24"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "194436853805-3er8kd03eu7kafvo52oli9e58eojq2br.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.emobies.emowall",
-            "certificate_hash": "09171a2c676c2ef24f972f56bc7c0b9ff85fc156"
-          }
-        },
-        {
-          "client_id": "194436853805-9j0k6n7k4fja4oh4rahukitpuhc4pqg7.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDJ2L8hRM4NC2CLjGd9oOLE7oHY7SBgQ40"
+          "current_key": "AIzaSyBMlYlFb0Pon5DUV9joFjGikUYKH_V6mgU"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "194436853805-9j0k6n7k4fja4oh4rahukitpuhc4pqg7.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:194436853805:android:3bb9610da15c9955a808a4",
+        "mobilesdk_app_id": "1:263206021572:android:514b6efaa5a4a5a7759c91",
         "android_client_info": {
-          "package_name": "com.nxtbit.emobies_24"
+          "package_name": "emobies.com"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "194436853805-9j0k6n7k4fja4oh4rahukitpuhc4pqg7.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDJ2L8hRM4NC2CLjGd9oOLE7oHY7SBgQ40"
+          "current_key": "AIzaSyBMlYlFb0Pon5DUV9joFjGikUYKH_V6mgU"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "194436853805-9j0k6n7k4fja4oh4rahukitpuhc4pqg7.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }
