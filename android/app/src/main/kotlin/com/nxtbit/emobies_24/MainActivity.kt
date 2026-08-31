@@ -36,14 +36,14 @@ class MainActivity: FlutterActivity() {
         // Cancelled automatically in onFlutterUiDisplayed() once the first frame is on screen.
         watchdogRunnable = Runnable {
             if (!isFinishing && !firstFrameRendered) {
-                showCrashScreen(
-                    "WATCHDOG TIMEOUT\n\n" +
+                val msg = "WATCHDOG TIMEOUT\n\n" +
                     "Flutter engine did not render within 6 seconds.\n" +
                     "This usually means main() threw before runApp(), " +
                     "or the engine failed to attach.\n\n" +
                     "Check: Supabase init, dart-define values, or a native plugin crash.\n\n" +
                     "flutterEngine attached: ${flutterEngine != null}"
-                )
+                EmobiesApplication.writeCrashFile(msg)
+                showCrashScreen(msg)
             }
         }
         watchdogHandler.postDelayed(watchdogRunnable!!, 6000)
