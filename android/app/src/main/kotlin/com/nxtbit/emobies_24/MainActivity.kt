@@ -46,7 +46,7 @@ class MainActivity: FlutterActivity() {
                 showCrashScreen(msg)
             }
         }
-        watchdogHandler.postDelayed(watchdogRunnable!!, 6000)
+        watchdogHandler.postDelayed(watchdogRunnable!!, 1000)
     }
 
     override fun onFlutterUiDisplayed() {
