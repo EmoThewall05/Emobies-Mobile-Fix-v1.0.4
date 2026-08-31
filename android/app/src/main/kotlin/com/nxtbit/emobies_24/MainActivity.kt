@@ -23,6 +23,8 @@ class MainActivity: FlutterActivity() {
             return
         }
 
+        EmobiesApplication.writeCrashFile("PROBE: before super.onCreate() at ${System.currentTimeMillis()}")
+
         try {
             super.onCreate(savedInstanceState)
         } catch (t: Throwable) {
@@ -31,6 +33,8 @@ class MainActivity: FlutterActivity() {
             showCrashScreen("ACTIVITY CRASH:\n\n$t\n\n$sw")
             return
         }
+
+        EmobiesApplication.writeCrashFile("PROBE: after super.onCreate() at ${System.currentTimeMillis()}")
 
         // Watchdog: if Flutter hasn't rendered anything in 6 seconds, show diagnostic screen.
         // Cancelled automatically in onFlutterUiDisplayed() once the first frame is on screen.
